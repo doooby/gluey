@@ -74,7 +74,7 @@ module Gluey::Glues
       Dir.mkdir cache_dir unless Dir.exists? cache_dir
       cache_file = "#{cache_dir}/#{path}.#{@material.name}"
       dependencies = [::Gluey::Dependencies::SingleFile.new(file).actualize]
-      FileUtils.mkdir_p cache_file
+      FileUtils.mkdir_p cache_file[0..(cache_file.rindex('/')-1)]
       File.write cache_file, glue.process(file, dependencies)
       @context.cache[key] = [cache_file, dependencies]
       return cache_file, dependencies

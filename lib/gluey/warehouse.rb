@@ -1,13 +1,13 @@
 require_relative '../gluey'
+require_relative 'exceptions/item_not_listed'
 require 'json'
 
 class Gluey::Warehouse
 
-  attr_reader :root_path, :assets
+  attr_reader :assets
 
-  def initialize(root, listing="assets/glue_listing.json")
-    @root_path = root
-    @listing_file = "#{root}/#{listing}"
+  def initialize(root, listing_file='assets/gluey_listing.json')
+    @listing_file = "#{root}/#{listing_file}"
     read_listing
   end
 
@@ -26,7 +26,12 @@ class Gluey::Warehouse
   end
 
   def read_listing
-    assets = JSON.parse File.read(@listing_file) rescue {}
+    assets = if File.exists? @listing_file
+               JSON.parse File.read(@listing_file) rescue {}
+             else
+               {}
+             end
+    raise "corrupted listing file at #{@listing_file}" unless assets.is_a? Hash
     @assets = assets.keys.inject({}){|h, asset_type| h[asset_type.to_sym] = assets[asset_type]; h }
   end
 
@@ -36,7 +41,7 @@ class Gluey::Warehouse
         h[path] = workshop.real_path material.name, path
         h
       end
-      listing[material.name.to_s] = list
+      listing[material.name.to_sym] = list
       listing
     end
     File.write @listing_file, JSON.pretty_generate(@assets)

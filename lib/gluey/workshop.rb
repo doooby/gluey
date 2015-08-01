@@ -19,13 +19,13 @@ class Gluey::Workshop
 
   def register_material(name, glue=::Gluey::Glues::Base, &block)
     name = name.to_sym
-    material = ::Gluey::Material.new name, glue, &block
+    material = ::Gluey::Material.new name, glue, self, &block
     @materials[name] = material
   end
 
   def fetch_file(material, path)
     # check cache
-    cache_key = "lump:#{material.name}:#{path}"
+    cache_key = "lump:#{material}:#{path}"
     file, dependencies = @cache[cache_key]
     if file && File.exists?(file) && !dependencies.any?{|d| d.changed?}
       return file
@@ -35,10 +35,10 @@ class Gluey::Workshop
     material = @materials[material.to_sym]
     base_file = material.find_base_file path
     file = "#{@tmp_path}/#{path}.#{material.asset}"
-    dependencies = [::Gluey::FileDependency.new(base_file).actualize]
+    dependencies = [::Gluey::Dependencies::SingleFile.new(base_file).actualize]
     # process
     glue = material.glue.new self, material
-    FileUtils.mkdir_p file
+    FileUtils.mkdir_p file[0..(file.rindex('/')-1)]
     File.write file, glue.process(base_file, dependencies)
 
     # save and return
@@ -48,8 +48,10 @@ class Gluey::Workshop
 
   def real_path(material, path)
     material = @materials[material.to_sym]
-    material.is_an_item?(path) || raise(::Gluey::ItemNotListed.new "#{material.to_s} doesn't have enlisted item #{path}.")
     file = material.find_base_file path
+    unless material.is_listed? path, file
+      raise ::Gluey::ItemNotListed.new("#{material.to_s} doesn't have enlisted item #{path} (file=#{file}).")
+    end
     "#{path}.#{File.mtime(file).to_i}.#{material.asset}"
   end
 

@@ -16,4 +16,10 @@ module Gluey::Glues
     end
 
   end
+
+  def self.load(name, *addons_names)
+    require_relative name
+    addons_names.flatten.each{|an| require_relative "#{name}/#{an}_addons" }
+  end
+
 end

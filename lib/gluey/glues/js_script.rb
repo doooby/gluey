@@ -18,7 +18,7 @@ module Gluey::Glues
 
     def pre_replace(args)
       file = find_nested_file(args[1])
-      cached_file, deps = get_nested_script file
+      cached_file, deps = get_nested_piece file
       @dependencies.concat deps
       @script.gsub! /"%#{args[0]}%"/, File.read(cached_file)
     end
