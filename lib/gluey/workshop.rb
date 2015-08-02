@@ -39,7 +39,7 @@ class Gluey::Workshop
     # process
     glue = material.glue.new self, material
     FileUtils.mkdir_p file[0..(file.rindex('/')-1)]
-    File.write file, glue.process(base_file, dependencies)
+    glue.make file, base_file, dependencies
 
     # save and return
     @cache[cache_key] = [file, dependencies]

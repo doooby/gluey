@@ -6,6 +6,10 @@ module Gluey::Glues
       @material = material
     end
 
+    def make(new_file, base_file, dependencies)
+      File.write new_file, process(base_file, dependencies)
+    end
+
     def process(base_file, dependecies)
       read_base_file base_file
     end
