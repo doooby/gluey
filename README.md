@@ -1,6 +1,12 @@
 # Gluey
 
-TODO: Write a gem description
+This is my custom alternative for processing assets in ruby web apps. Firt, there was just dislike in sprockets
+(and their integration into rails), but then i realized it's not that big a deal to write my own caching and processing system.
+This has unlimited abilities, because it's very easy to write custom directives (that headers in assets that you know from
+sprockets). For example, you can precompile handlebars a nd insert them into page's js file as an object (it cannot be easier).
+You can append, prepend, insert (...) other files, merge them into one asset, that you wanth to hit on
+particular http path. There is no docs nor test for now, and probably never will be, but the code should not be hard
+to read, so if you're interested, just digg into the code itself.
 
 ## Installation
 
@@ -20,7 +26,7 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+ look at my nesselsburg2 integration (a repository just next door)
 
 ## Contributing
 

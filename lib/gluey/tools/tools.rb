@@ -2,9 +2,7 @@ require 'gluey/warehouse'
 
 module Gluey::Tools
 
-  def self.each_asset_file(workshop)
-    warehouse = Gluey::Warehouse.new workshop.root_path
-    warehouse.write_listing workshop
+  def self.each_asset_file(workshop, warehouse)
     warehouse.assets.each do |type, assets|
       assets.each do |path, real_path|
         cache_file = workshop.fetch_file type, path
@@ -13,6 +11,9 @@ module Gluey::Tools
     end
   end
 
-
+  def self.create_uglifier_builder(**opts)
+    require 'uglifier'
+    ->(a, b){File.write b, ::Uglifier.new(opts.merge! copyright: :none).compile(File.read a)}
+  end
 
 end
