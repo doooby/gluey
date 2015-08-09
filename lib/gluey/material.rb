@@ -2,7 +2,7 @@ require_relative 'exceptions/file_not_found'
 
 class Gluey::Material
 
-  attr_reader :name, :glue
+  attr_reader :name, :glue, :paths, :items
   attr_accessor :asset, :file_extension, :public_dir
 
   def initialize(name, glue, context)
@@ -24,17 +24,20 @@ class Gluey::Material
     @items << declaration
   end
 
-  def is_listed?(path, file=nil)
-    @items.any? do |items_declaration|
-      case items_declaration
-        when String
-          path == items_declaration
-        when Regexp
-          path =~ items_declaration
-        when Proc
-          items_declaration[path, file]
-      end
-    end
+  def is_listed?(path, file)
+    file[/\.(\w+)(?:\.erb)?$/, 1]==@file_extension &&
+        @items.any? do |items_declaration|
+          case items_declaration
+            when :all, :any
+              true
+            when String
+              path == items_declaration
+            when Regexp
+              path =~ items_declaration
+            when Proc
+              items_declaration[path, file]
+          end
+        end
   end
 
   def to_s
@@ -42,18 +45,18 @@ class Gluey::Material
   end
 
   def find_base_file(path)
-    paths.each do |base_path|
+    full_paths.each do |base_path|
       p = "#{base_path}/#{path}.#{@file_extension}"; return p if File.exists? p
       p = "#{p}.erb"; return p if File.exists? p
       p = "#{base_path}/#{path}/index.#{@file_extension}"; return p if File.exists? p
       p = "#{p}.erb"; return p if File.exists? p
-      end
+    end
     raise(::Gluey::FileNotFound.new "#{to_s} cannot find base file for #{path}")
   end
 
   def list_all_items
     list = []
-    paths.map do |base_path|
+    full_paths.map do |base_path|
       glob_path = "#{base_path}/**/*.#{@file_extension}"
       files = Dir[glob_path] + Dir["#{glob_path}.erb"]
       files.select do |file|
@@ -67,7 +70,7 @@ class Gluey::Material
 
   private
 
-  def paths
+  def full_paths
     @paths.map{|p| "#{@context.root_path}/#{p}"}
   end
 

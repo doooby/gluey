@@ -3,8 +3,8 @@ require_relative '../dependencies/single_file'
 module Gluey::Glues
   class Script < Base
 
-    PREFIXES = ['//'].map{|p| Regexp.escape(p)}
-    DIRECTIVES_REGEXP = Regexp.compile "\\A(?:\\s*#{PREFIXES.map{|p| "(?:#{p}=.*\\n?)+"}.join '|'})+"
+    PREFIXES = ['//', '#'].map{|p| Regexp.escape(p)}
+    DIRECTIVES_REGEXP = Regexp.compile "\\A(?:\\s*#{PREFIXES.map{|p| "(?:#{p}>.*\\n?)+"}.join '|'})+"
 
     def process(base_file, deps)
       @script, @directives = strip_directives read_base_file(base_file)
@@ -46,7 +46,7 @@ module Gluey::Glues
       if directives
         script = $'
         directives = directives.split("\n").reject{|dir| dir.empty?}.map do |dir|
-          dir.strip[/(?:#{PREFIXES.join '|'}=)\s*(.+)/, 1].split (' ')
+          dir.strip[/(?:#{PREFIXES.join '|'})>\s*(.+)/, 1].split (' ')
         end
       end
       return script, directives

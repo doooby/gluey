@@ -16,7 +16,7 @@ module Gluey::Glues
 
     def read_base_file(file)
       raw_content = File.read(file)
-      file[-4..-1]=='.erb' ? ERB.new(raw_content).result : raw_content
+      file[-4..-1]=='.erb' ? ERB.new(raw_content).result(@context.get_binding) : raw_content
     end
 
   end

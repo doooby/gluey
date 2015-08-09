@@ -1,8 +1,10 @@
 require_relative '../gluey'
+require_relative 'url'
 require_relative 'exceptions/item_not_listed'
 require 'json'
 
 class Gluey::Warehouse
+  include Gluey::Url
 
   attr_reader :assets
 

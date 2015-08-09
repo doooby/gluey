@@ -1,4 +1,5 @@
 require_relative '../gluey'
+require_relative 'url'
 
 require_relative 'exceptions/item_not_listed'
 
@@ -6,8 +7,10 @@ require_relative 'material'
 require_relative 'glues/base'
 
 class Gluey::Workshop
+  include Gluey::Url
 
   attr_reader :root_path, :tmp_path, :materials, :cache
+  attr_accessor :base_url
 
   def initialize(root, tmp_dir='tmp/gluey')
     @root_path = root
@@ -20,6 +23,7 @@ class Gluey::Workshop
   def register_material(name, glue=::Gluey::Glues::Base, &block)
     name = name.to_sym
     material = ::Gluey::Material.new name, glue, self, &block
+    material.items << :any if material.items.empty?
     @materials[name] = material
   end
 
@@ -59,6 +63,14 @@ class Gluey::Workshop
     path.match /^(.+)\.\d+\.(\w+)$/ do |m|
       yield m[1], m[2]
     end
+  end
+
+  def full_path(material, path)
+    "#{base_url}/ass/#{material}/#{real_path material, path}"
+  end
+
+  def get_binding
+    binding
   end
 
 end

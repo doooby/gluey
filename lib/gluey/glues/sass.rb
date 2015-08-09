@@ -1,8 +1,9 @@
 require 'sass'
+require_relative 'script'
 require_relative '../dependencies/single_file'
 
 module Gluey::Glues
-    class Sass < Base
+    class Sass < Script
 
       def process(base_file, deps)
         opts = {
@@ -12,7 +13,7 @@ module Gluey::Glues
             filename: base_file,
             line_comments: true
         }
-        engine = ::Sass::Engine.new(read_base_file(base_file), opts)
+        engine = ::Sass::Engine.new super(base_file, deps), opts
         output = engine.render
 
         engine.dependencies.each do |dependency|
