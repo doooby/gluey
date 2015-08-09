@@ -25,5 +25,9 @@ module Gluey::Dependencies
       Dir[@dir_pattern]
     end
 
+    def mark
+      ''
+    end
+
   end
 end

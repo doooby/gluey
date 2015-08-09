@@ -25,5 +25,9 @@ module Gluey::Dependencies
       @file == other.file
     end
 
+    def mark
+      File.mtime(@file).to_i.to_s
+    end
+
   end
 end

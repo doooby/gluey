@@ -40,7 +40,7 @@ class Gluey::Warehouse
   def write_listing(workshop)
     @assets = workshop.materials.values.inject({}) do |listing, material|
       list = material.list_all_items.inject({}) do |h, path|
-        h[path] = workshop.real_path material.name, path
+        h[path] = workshop.real_path material.name, path, true
         h
       end
       listing[material.name.to_sym] = list

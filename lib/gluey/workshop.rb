@@ -1,3 +1,4 @@
+require 'digest'
 require_relative '../gluey'
 require_relative 'url'
 
@@ -29,7 +30,7 @@ class Gluey::Workshop
 
   def fetch_file(material, path)
     # check cache
-    cache_key = "lump:#{material}:#{path}"
+    cache_key = chache_asset_key material, path
     file, dependencies = @cache[cache_key]
     if file && File.exists?(file) && !dependencies.any?{|d| d.changed?}
       return file
@@ -50,27 +51,31 @@ class Gluey::Workshop
     file
   end
 
-  def real_path(material, path)
+  def real_path(material, path, digest_mark=false)
     material = @materials[material.to_sym]
     file = material.find_base_file path
     unless material.is_listed? path, file
       raise ::Gluey::ItemNotListed.new("#{material.to_s} doesn't have enlisted item #{path} (file=#{file}).")
     end
-    "#{path}.#{File.mtime(file).to_i}.#{material.asset}"
-  end
-
-  def try_real_path(path)
-    path.match /^(.+)\.\d+\.(\w+)$/ do |m|
-      yield m[1], m[2]
+    if digest_mark
+      fetch_file material, path
+      cache_key = chache_asset_key material, path
+      file, dependencies = @cache[cache_key]
+      digested_mark = Digest::MD5.new.digest dependencies.map(&:mark).join
+      "#{path}.#{Digest.hexencode digested_mark}.#{material.asset}"
+    else
+      "#{path}.#{material.asset}"
     end
-  end
-
-  def full_path(material, path)
-    "#{base_url}/ass/#{material}/#{real_path material, path}"
   end
 
   def get_binding
     binding
+  end
+
+  private
+
+  def chache_asset_key(material, path)
+    "lump:#{material}:#{path}"
   end
 
 end

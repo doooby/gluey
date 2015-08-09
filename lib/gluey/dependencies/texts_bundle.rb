@@ -26,6 +26,10 @@ module Gluey::Dependencies
       @dependencies.any?{|d| d.changed?} || @dir_dep.changed? || (File.mtime(@file).to_i != @mtime rescue true)
     end
 
+    def mark
+      @dependencies.map(&:mark).join
+    end
+
     def actualize
       # remove deleted files
       @dependencies.delete_if{|dep| !dep.exists? }
