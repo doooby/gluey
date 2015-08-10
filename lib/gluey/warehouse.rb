@@ -13,7 +13,7 @@ class Gluey::Warehouse
     read_listing
   end
 
-  def real_path(asset_type, path)
+  def real_path(asset_type, path, mark=nil)
     listing = @assets[asset_type]
     unless listing
       raise ::Gluey::ItemNotListed.new("Asset type #{asset_type} is not defined! (listing file problem?)")

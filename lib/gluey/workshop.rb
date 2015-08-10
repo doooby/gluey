@@ -58,13 +58,19 @@ class Gluey::Workshop
       raise ::Gluey::ItemNotListed.new("#{material.to_s} doesn't have enlisted item #{path} (file=#{file}).")
     end
     if digest_mark
-      fetch_file material, path
-      cache_key = chache_asset_key material, path
+      fetch_file material.name, path
+      cache_key = chache_asset_key material.name, path
       file, dependencies = @cache[cache_key]
       digested_mark = Digest::MD5.new.digest dependencies.map(&:mark).join
       "#{path}.#{Digest.hexencode digested_mark}.#{material.asset}"
     else
       "#{path}.#{material.asset}"
+    end
+  end
+
+  def try_real_path(path)
+    path.match /^(.+)\.(?:[a-f0-9]{32}\.)(\w+)$/ do |m|
+      yield m[1], m[2]
     end
   end
 
