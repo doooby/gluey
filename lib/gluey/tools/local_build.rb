@@ -21,7 +21,7 @@ module Gluey::Tools
     return built
   end
 
-  def self.clear_public_dir(workshop, warehouse, versions=2, public_dir='public/assets')
+  def self.clear_public_dir(workshop, warehouse, versions=3, public_dir='public/assets')
     public_dirs = workshop.materials.values.inject({}) do |h, m|
       h[m.name] = "#{workshop.root_path}/#{m.public_dir || public_dir}"
       h
@@ -30,7 +30,7 @@ module Gluey::Tools
     # process existing files into assets
     eas_regexp = /^#{workshop.root_path}\/(.+)$/
     assets = public_dirs.values.uniq.map{|dir| Dir["#{dir}/**/*.*.*"]}.flatten.
-        map{|f| Asset.try_create f[eas_regexp, 1]}.compact
+        map{|f| Asset.try_create f[eas_regexp, 1], f}.compact
     assets = assets.inject({}){|h, asset| (h[asset.path] ||= []) << asset; h }
 
     # items not on list
@@ -38,7 +38,7 @@ module Gluey::Tools
     warehouse.assets.each do |type, mater_assets|
       mater_assets.each do |_, real_path|
         file = "#{public_dirs[type]}/#{real_path}"
-        asset = Asset.try_create file[eas_regexp, 1]
+        asset = Asset.try_create file[eas_regexp, 1], f
         on_list << asset
       end
     end
@@ -66,9 +66,9 @@ module Gluey::Tools
 
   class Asset < Struct.new(:path, :time_stamp)
 
-    def self.try_create(file)
-      file.match /^([^\.]+)\.(\d+)\.(\w+)$/ do |m|
-        new "#{m[1]}.#{m[3]}", m[2]
+    def self.try_create(path, file)
+      path.match /^([^\.]+)\.(?:[a-f0-9]{32}\.)?(\w+)$/ do |m|
+        new "#{m[1]}.#{m[2]}", File.mtime(file).to_i
       end
     end
 

@@ -1,6 +1,5 @@
 require 'sass'
 require_relative 'script'
-require_relative '../dependencies/single_file'
 
 module Gluey::Glues
     class Sass < Script

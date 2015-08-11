@@ -1,2 +1,2 @@
 
-require_relative 'gluey/version'
+require_relative 'gluey/common/version'

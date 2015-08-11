@@ -1,4 +1,3 @@
-require_relative 'exceptions/file_not_found'
 
 class Gluey::Material
 

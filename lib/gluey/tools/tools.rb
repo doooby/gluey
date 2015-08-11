@@ -5,7 +5,7 @@ module Gluey::Tools
   def self.each_asset_file(workshop, warehouse)
     warehouse.assets.each do |type, assets|
       assets.each do |path, real_path|
-        cache_file = workshop.fetch_file type, path
+        cache_file, _ = workshop.fetch_asset type, path
         yield cache_file, type, real_path
       end
     end
