@@ -69,7 +69,7 @@ class Gluey::Workshop
   end
 
   def try_real_path(path)
-    path.match /^(.+)\.(?:[a-f0-9]{32}\.)(\w+)$/ do |m|
+    path.match /^([^\.]+)\.(?:[a-f0-9]{32}\.)?(\w+)$/ do |m|
       yield m[1], m[2]
     end
   end
