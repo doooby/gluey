@@ -22,11 +22,12 @@ module Gluey::Glues
   end
 
   def self.load(name, *addons_names)
-    require_relative name
-    addons_names.flatten.each{|an| require_relative "#{name}/#{an}_addons" }
+    glue = File.expand_path("../#{name}", __FILE__)
+    require glue
+    addons_names.flatten.each{|an| require "#{glue}/#{an}_addons" }
     ::Gluey::Glues.const_get name.split('_').map(&:capitalize).join
   rescue LoadError => e
-    raise e.message
+    raise "#{e.message}\n -- missing dependency? (are you using Gemfile?)"
   end
 
 end

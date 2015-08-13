@@ -1,17 +1,13 @@
-require 'gluey'
+require 'digest'
 require_relative 'workshop/material'
 require_relative 'workshop/glues/base'
-
-require 'digest'
-require_relative 'base/environment'
+require_relative 'workshop/asset_processing'
 
 module Gluey
   class Workshop < Environment
+    include ::Gluey::AssetProcessing
 
-    require_relative 'workshop/asset_processing'
-    include AssetProcessing
-
-    attr_reader :cache_path, :cache
+    attr_reader :cache_path, :cache, :materials
 
     def initialize(root, cache_path='tmp/gluey', **opts, &block)
       super opts.merge!(

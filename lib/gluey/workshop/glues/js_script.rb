@@ -31,23 +31,22 @@ module Gluey::Glues
       @output = "(function(){\n#{@output}\n}())"
     end
 
-  end
+    def pre_replace_with_texts_bundle(args)
+      dir = File.expand_path("../#{args[1]}", @base_file)
+      raise "cannot find relative path #{args[1]} for script=#{@base_file}" unless dir && Dir.exists?(dir)
 
-  def pre_replace_with_texts_bundle(args)
-    dir = File.expand_path("../#{args[1]}", @base_file)
-    raise "cannot find relative path #{args[1]} for script=#{@base_file}" unless dir && Dir.exists?(dir)
+      logical_path = dir[/(?:^#{@context.root}\/)?(.+)$/, 1]
+      key = "dep:txt_bundle:#{logical_path}:#{@material.name}"
+      hb_dep = @context.cache[key]
+      unless hb_dep
+        hb_dep = ::Gluey::Dependencies::TextsBundle.new dir, logical_path, @context
+        @context.cache[key] = hb_dep
+      end
 
-    logical_path = dir[/(?:^#{@context.root}\/)?(.+)$/, 1]
-    key = "dep:txt_bundle:#{logical_path}:#{@material.name}"
-    hb_dep = @context.cache[key]
-    unless hb_dep
-      hb_dep = ::Gluey::Dependencies::TextsBundle.new dir, logical_path, @context
-      @context.cache[key] = hb_dep
+      hb_dep.actualize if hb_dep.changed?
+      @dependencies << hb_dep
+      @script.gsub! /"%#{args[0]}%"/, File.read(hb_dep.file)
     end
 
-    hb_dep.actualize if hb_dep.changed?
-    @dependencies << hb_dep
-    @script.gsub! /"%#{args[0]}%"/, File.read(hb_dep.file)
   end
-
 end

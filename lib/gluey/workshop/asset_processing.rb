@@ -1,6 +1,5 @@
 module Gluey
-
-  module Workshop::AssetProcessing
+  module AssetProcessing
 
     def fetch(material, path, mark=nil)
       material = material.is_a?(::Gluey::Material) ? material : self.material(material)
@@ -25,7 +24,7 @@ module Gluey
       file = material.find_base_file path
       unless material.is_listed? path, file
         msg = "#{material.to_s} doesn't have enlisted item #{path} (#{file})."
-        raise ::Gluey::ItemNotListed.new(msg)
+        raise ::Gluey::ListingError.new(msg)
       end
 
       if mark_versions
@@ -50,5 +49,4 @@ module Gluey
     end
 
   end
-
 end

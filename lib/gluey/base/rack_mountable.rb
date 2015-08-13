@@ -3,7 +3,7 @@ require 'rack/utils'
 module Gluey
   class RackMountable
     ALLOWED_HEADERS = %w[GET HEAD].freeze
-    PATH_PARSER = %r_^/?(\w+)/([^\.]+)(?:\.([a-f0-9]{32}))?\.\w+$_
+    PATH_PARSER = %r_^/(\w+)/([^\.]+)\.(?:([a-f0-9]{32})\.)?\w+$_
 
     def initialize(env, logger)
       @environment = env
@@ -21,7 +21,6 @@ module Gluey
       end
 
       # Extract the path from everything after the leading slash
-      @logger.info "##### PATH_INFO: #{env['PATH_INFO']} #####"
       _, material, path, mark = env['PATH_INFO'].to_s.match(PATH_PARSER).to_a
       unless path
         return bat_path_response
@@ -29,15 +28,15 @@ module Gluey
 
       file = @environment[material, path, mark]
       unless file
-        @logger.info "Not found glued asset #{path}, material=#{material} - 404 (#{time_elapsed.call}ms)"
+        @logger.info "Not found glued asset #{path} (material=#{material}) - 404 (#{time_elapsed.call}ms)"
         return not_found_response
       end
 
-      @logger.info "Served glued asset #{path}, material=#{material} - 200 (#{time_elapsed.call}ms)"
-      ok_response file
+      @logger.info "Served glued asset #{path} (material=#{material}) - 200 (#{time_elapsed.call}ms)"
+      ok_response file, (mark && @environment.mark_versions)
 
     rescue => e
-      @logger.error "Error gluying asset #{path}, material=#{material}:"
+      @logger.error "Error gluying asset #{path}  (material=#{material}):"
       @logger.error "#{e.class.name}: #{e.message}"
       raise
     end
@@ -45,12 +44,12 @@ module Gluey
     private
 
     # Returns a 200 OK response tuple
-    def ok_response(file)
+    def ok_response(file, to_cache)
       headers = {
           'Content-Length' => File.stat(file).size,
           'Content-Type' => Rack::Mime.mime_type(File.extname(file), 'text/plain')
       }
-      if @environment.mark_versions
+      if to_cache
         headers['Cache-Control'] = "public, max-age=31536000"
       end
 
