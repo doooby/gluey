@@ -8,7 +8,7 @@ module Gluey::Glues
         opts = {
             syntax: @material.file_extension.to_sym,
             load_paths: [File.expand_path('..', base_file)],
-            cache_store: ::Sass::CacheStores::Filesystem.new("#{@context.tmp_path}/.sass"),
+            cache_store: ::Sass::CacheStores::Filesystem.new("#{@context.cache_path}/.sass"),
             filename: base_file,
             line_comments: true
         }

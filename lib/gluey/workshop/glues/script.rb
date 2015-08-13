@@ -64,13 +64,13 @@ module Gluey::Glues
     end
 
     def get_nested_piece(file)
-      path = file[/(?:^#{@context.root_path}\/)?(.+)$/, 1]
+      path = file[/(?:^#{@context.root}\/)?(.+)$/, 1]
       key = "script_piece:#{@material.name}:#{path}"
       cache_file, dependencies = @context.cache[key]
       return cache_file, dependencies if cache_file && File.exists?(cache_file) && !dependencies.any?{|dep| dep.changed?}
 
       glue = self.class.new @context, @material
-      cache_dir = "#{@context.tmp_path}/.script"
+      cache_dir = "#{@context.cache_path}/.script"
       Dir.mkdir cache_dir unless Dir.exists? cache_dir
       cache_file = "#{cache_dir}/#{path}.#{@material.name}"
       dependencies = [::Gluey::Dependencies::SingleFile.new(file).actualize]

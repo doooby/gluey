@@ -2,25 +2,24 @@
 class Gluey::Material
 
   attr_reader :name, :glue, :paths, :items
-  attr_accessor :asset, :file_extension, :public_dir
+  attr_accessor :asset_extension, :file_extension
 
   def initialize(name, glue, context)
     @name = name.to_sym
     @glue = glue
     @context = context
-    @asset = name.to_s
-    @paths = []
-    @items = []
+
+    set({asset_extension: name.to_s, paths: [], items: []})
     yield self if block_given?
-    @file_extension ||= @asset.dup
+    @file_extension ||= @asset_extension.dup
   end
 
-  def add_path(path)
-    @paths << path
-  end
-
-  def add_item(declaration)
-    @items << declaration
+  def set(**opts)
+    allowed_options = %i(paths items asset_extension file_extension)
+    opts.each do |k, value|
+      next unless allowed_options.include? k
+      instance_variable_set "@#{k}", value
+    end
   end
 
   def is_listed?(path, file)
@@ -70,7 +69,7 @@ class Gluey::Material
   private
 
   def full_paths
-    @paths.map{|p| "#{@context.root_path}/#{p}"}
+    @paths.map{|p| "#{@context.root}/#{p}"}
   end
 
 end

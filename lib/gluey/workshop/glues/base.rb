@@ -24,6 +24,7 @@ module Gluey::Glues
   def self.load(name, *addons_names)
     require_relative name
     addons_names.flatten.each{|an| require_relative "#{name}/#{an}_addons" }
+    ::Gluey::Glues.const_get name.split('_').map(&:capitalize).join
   rescue LoadError => e
     raise e.message
   end

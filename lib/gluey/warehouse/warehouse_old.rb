@@ -8,11 +8,16 @@ require_relative 'exceptions/item_not_listed'
 class Gluey::Warehouse
   include Gluey::UrlHelper
 
+  attr_accessor :base_url
   attr_reader :assets
 
   def initialize(root, listing_file='assets/gluey_listing.json')
     @listing_file = "#{root}/#{listing_file}"
     read_listing
+  end
+
+  def asset_url(material, path)
+    "#{base_url}/#{material}/#{real_path material, path}"
   end
 
   def read_listing

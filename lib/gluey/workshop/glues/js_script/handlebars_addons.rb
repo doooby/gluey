@@ -7,7 +7,7 @@ module Gluey::Glues
       dir = File.expand_path("../#{args[1]}", @base_file)
       raise "cannot find dir containing handlebars templates for script=#{@base_file}" unless dir && Dir.exists?(dir)
 
-      logical_path = dir[/(?:^#{@context.root_path}\/)?(.+)$/, 1]
+      logical_path = dir[/(?:^#{@context.root}\/)?(.+)$/, 1]
       key = "dep:hb_bundle:#{logical_path}:#{@material.name}"
       hb_dep = @context.cache[key]
       unless hb_dep

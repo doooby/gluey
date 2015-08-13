@@ -5,7 +5,7 @@ module Gluey::Dependencies
   class Handlebars_bundle < SingleFile
 
     def initialize(dir, logical_path, context)
-      tmp_dir = "#{context.tmp_path}/.texts_bundle"
+      tmp_dir = "#{context.cache_path}/.texts_bundle"
       Dir.mkdir tmp_dir unless Dir.exists? tmp_dir
       @cache_path = "#{tmp_dir}/#{logical_path.gsub '/', '-'}"
       Dir.mkdir @cache_path unless Dir.exists? @cache_path
