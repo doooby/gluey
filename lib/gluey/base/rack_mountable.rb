@@ -41,6 +41,10 @@ module Gluey
       raise
     end
 
+    def inspect
+      '#<Gluey::RackMountable>'
+    end
+
     private
 
     # Returns a 200 OK response tuple
