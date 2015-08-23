@@ -5,6 +5,8 @@ module Gluey
     ALLOWED_HEADERS = %w[GET HEAD].freeze
     PATH_PARSER = %r_^/(\w+)/([^\.]+)\.(?:([a-f0-9]{32})\.)?\w+$_
 
+    attr_reader :environment
+
     def initialize(env, logger)
       @environment = env
       @logger = logger
@@ -28,7 +30,7 @@ module Gluey
 
       file = @environment[material, path, mark]
       unless file
-        @logger.info "Not found glued asset #{path} (material=#{material}) - 404 (#{time_elapsed.call}ms)"
+        @logger.info "Not found #{path} (material=#{material}) - 404 (#{time_elapsed.call}ms)"
         return not_found_response
       end
 
@@ -57,7 +59,7 @@ module Gluey
         headers['Cache-Control'] = "public, max-age=31536000"
       end
 
-      [200, headers, FileBody.new(file)]
+      [200, headers, FileData.new(file)]
     end
 
     def method_not_allowed_response
@@ -73,7 +75,7 @@ module Gluey
       [404, {'Content-Type' => "text/plain", 'Content-Length' => "9"}, ['Not found']]
     end
 
-    class FileBody < Struct.new(:file_path)
+    class FileData < Struct.new(:file_path)
       def each
         File.open(file_path, 'rb') do |file|
           while chunk = file.read(16384)
