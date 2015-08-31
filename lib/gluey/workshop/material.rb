@@ -69,7 +69,7 @@ class Gluey::Material
   private
 
   def full_paths
-    @paths.map{|p| "#{@context.root}/#{p}"}
+    @paths.map{|p| File.join @context.root, p}
   end
 
 end
