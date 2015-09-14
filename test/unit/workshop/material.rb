@@ -12,6 +12,15 @@ class TestMaterial < Minitest::Test
     assert_equal 'cpp', m.file_extension
   end
 
+  def test_init_base_attrs2
+    m = Gluey::Material.new('css', 'blue', 'much_context'){|_m| _m.set file_extension: 'scss' }
+    assert_equal :css, m.name
+    assert_equal 'blue', m.glue
+    assert_equal 'much_context', m.instance_variable_get('@context')
+    assert_equal 'css', m.asset_extension
+    assert_equal 'scss', m.file_extension
+  end
+
   def test_init_with_block
     m = Gluey::Material.new('cpp', 'glue', :context) do |_m|
       assert_kind_of Gluey::Material, _m
