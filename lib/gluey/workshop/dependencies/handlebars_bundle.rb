@@ -12,6 +12,7 @@ module Gluey::Dependencies
 
       @dir_dep = ::Gluey::Dependencies::Directory.new(dir, '**/*.hb')
       @dependencies = []
+      @context = context
       super "#{@cache_path}.hb_bundle"
     end
 
@@ -40,7 +41,11 @@ module Gluey::Dependencies
       @dependencies.each do |dep|
         next if !dep.changed? && File.exists?(dep.data[:hb_precompiled])
         dep.actualize
-        precompile_output = handlebars_context.precompile File.read(dep.file)
+        file_content = File.read dep.file
+        if dep.file[-4..-1]=='.erb'
+          file_content = ERB.new(file_content).result @context.get_binding
+        end
+        precompile_output = handlebars_context.precompile file_content
         File.write dep.data[:hb_precompiled], precompile_output
       end
 
