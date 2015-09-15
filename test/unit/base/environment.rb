@@ -18,13 +18,12 @@ class TestEnvironment < Minitest::Test
   end
 
   def test_asset_url
-    Gluey::Environment.class_eval do
-      define_method(:real_path){|m, p| 'abcdef'}
-    end
+    Gluey::Environment.class_eval{ define_method(:real_path) {|m, p|'abcdef' } }
     e = Gluey::Environment.new root: '/'
     assert_equal "/assets/js/abcdef", e.asset_url('js', nil)
     e = Gluey::Environment.new root: '/', base_url: 'localhost:3000', path_prefix: '/gass'
     assert_equal "localhost:3000/gass/js/abcdef", e.asset_url('js', nil)
+    Gluey::Environment.class_eval{ remove_method :real_path }
   end
 
 end

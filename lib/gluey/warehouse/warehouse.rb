@@ -1,5 +1,5 @@
 require 'json'
-require_relative 'warehouse/asset_retrieving'
+require_relative 'asset_retrieving'
 
 module Gluey
   class Warehouse < Environment

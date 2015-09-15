@@ -3,8 +3,8 @@ require_relative 'single_file'
 module Gluey::Dependencies
   class Directory < SingleFile
 
-    def initialize(dir, dir_pattern=nil)
-      @dir_pattern = "#{dir}/#{ dir_pattern || '**/*' }"
+    def initialize(dir, dir_pattern='**/*')
+      @dir_pattern = "#{dir}/#{dir_pattern}"
       super dir
     end
 

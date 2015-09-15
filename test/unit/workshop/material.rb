@@ -71,19 +71,19 @@ class TestMaterial < Minitest::Test
   end
 
   def test_find_base_file
-    e = Gluey::Environment.new root: PROJECT_PATH
-    m = Gluey::Material.new('js', nil, e){|_m| _m.set items: [:any], paths: %w(test/files)}
-    assert_equal "#{PROJECT_PATH}/test/files/test.js", m.find_base_file('test')
-    assert_equal "#{PROJECT_PATH}/test/files/test2.js.erb", m.find_base_file('test2')
-    assert_equal "#{PROJECT_PATH}/test/files/home/index.js", m.find_base_file('home')
-    assert_equal "#{PROJECT_PATH}/test/files/work/index.js.erb", m.find_base_file('work')
+    e = Gluey::Environment.new root: TESTS_PATH
+    m = Gluey::Material.new('js', nil, e){|_m| _m.set items: [:any], paths: %w(files)}
+    assert_equal "#{TESTS_PATH}/files/test.js", m.find_base_file('test')
+    assert_equal "#{TESTS_PATH}/files/test2.js.erb", m.find_base_file('test2')
+    assert_equal "#{TESTS_PATH}/files/home/index.js", m.find_base_file('home')
+    assert_equal "#{TESTS_PATH}/files/work/index.js.erb", m.find_base_file('work')
     assert_raises(Gluey::FileNotFound){ m.find_base_file 'badabum' }
   end
 
   def test_list_all_items
-    e = Gluey::Environment.new root: PROJECT_PATH
-    m = Gluey::Material.new('js', nil, e){|_m| _m.set items: [:any], paths: %w(test/files)}
-    assert_equal %w(test test2 home work).sort, m.list_all_items.sort
+    e = Gluey::Environment.new root: TESTS_PATH
+    m = Gluey::Material.new('js', nil, e){|_m| _m.set items: [:any], paths: %w(files)}
+    assert_equal %w(test test2 home home/variable work).sort, m.list_all_items.sort
   end
 
 end

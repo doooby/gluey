@@ -1,7 +1,7 @@
 require 'digest'
-require_relative 'workshop/material'
-require_relative 'workshop/glues/base'
-require_relative 'workshop/asset_processing'
+require_relative 'material'
+require_relative 'glues/base'
+require_relative 'asset_processing'
 
 module Gluey
   class Workshop < Environment

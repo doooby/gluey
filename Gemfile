@@ -9,4 +9,7 @@ end
 
 group :test do
   gem 'minitest'
+
+  gem 'sass'
+  gem 'uglifier'
 end
